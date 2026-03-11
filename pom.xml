@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <description>OpenMetadata Spark Agent</description>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.open-metadata</groupId>
    <artifactId>openmetadata-spark-agent</artifactId>
-   <version>1.0-SNAPSHOT</version>
+   <version>1.1.1-SNAPSHOT</version>
    <name>${project.groupId}:${project.artifactId}</name>
    <url>https://github.com/open-metadata/OpenMetadata</url>
-   
+
    <licenses>
       <license>
          <name>The Apache License, Version 2.0</name>
@@ -42,25 +42,32 @@
          <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
       </repository>
    </distributionManagement>
+
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <maven.compiler.source>11</maven.compiler.source>
-      <maven.compiler.target>11</maven.compiler.target>
-      <openLineageVersion>1.12.0</openLineageVersion>
+      <maven.compiler.release>17</maven.compiler.release>
+      <openLineageVersion>1.43.0</openLineageVersion>
       <spotless.version>2.41.1</spotless.version>
       <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
       <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-      <sparkVersion>3.5.0</sparkVersion>
+      <sparkVersion>4.0.2</sparkVersion>
    </properties>
+
    <dependencies>
       <dependency>
          <groupId>io.openlineage</groupId>
          <artifactId>openlineage-java</artifactId>
          <version>${openLineageVersion}</version>
       </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/io.openlineage/openlineage-java -->
       <dependency>
          <groupId>io.openlineage</groupId>
-         <artifactId>openlineage-spark_2.12</artifactId>
+         <artifactId>openlineage-sql-java</artifactId>
+         <version>${openLineageVersion}</version>
+      </dependency>
+      <dependency>
+         <groupId>io.openlineage</groupId>
+         <artifactId>openlineage-spark_2.13</artifactId>
          <version>${openLineageVersion}</version>
       </dependency>
       <dependency>
@@ -79,6 +86,7 @@
          <artifactId>httpclient</artifactId>
          <version>4.5.14</version>
       </dependency>
+
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-api</artifactId>
@@ -105,13 +113,13 @@
          <artifactId>byte-buddy-agent</artifactId>
          <version>1.14.4</version>
       </dependency>
-      <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
       <dependency>
          <groupId>org.apache.spark</groupId>
-         <artifactId>spark-sql_2.12</artifactId>
+         <artifactId>spark-sql_2.13</artifactId>
          <version>${sparkVersion}</version>
       </dependency>
    </dependencies>
+
    <build>
       <finalName>${project.groupId}:${project.artifactId}</finalName>
       <pluginManagement>
@@ -145,18 +153,21 @@
             </plugin>
          </plugins>
       </pluginManagement>
+
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.13.0</version>
             <configuration>
-               <source>8</source>
-               <target>8</target>
+               <release>17</release>
             </configuration>
          </plugin>
+
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
+            <version>3.5.1</version>
             <executions>
                <execution>
                   <phase>package</phase>
@@ -166,7 +177,7 @@
                   <configuration>
                      <artifactSet>
                         <includes>
-                           <include>io.openlineage:openlineage-spark_2.12</include>
+                           <include>io.openlineage:openlineage-spark_2.13</include>
                         </includes>
                      </artifactSet>
                   </configuration>
@@ -175,6 +186,7 @@
          </plugin>
       </plugins>
    </build>
+
    <profiles>
       <profile>
          <id>release</id>
@@ -193,6 +205,7 @@
                      </execution>
                   </executions>
                </plugin>
+
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
@@ -209,6 +222,7 @@
                      </execution>
                   </executions>
                </plugin>
+
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-gpg-plugin</artifactId>
@@ -229,6 +243,7 @@
                      </execution>
                   </executions>
                </plugin>
+
                <plugin>
                   <groupId>org.sonatype.plugins</groupId>
                   <artifactId>nexus-staging-maven-plugin</artifactId>
